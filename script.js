@@ -3,6 +3,7 @@ function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
   setupSearch(allEpisodes);
+  setupEpisodeSelector(allEpisodes);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -18,6 +19,7 @@ function makePageForEpisodes(episodeList) {
 
 function makeEpisodeCard(episode) {
   const card = document.createElement("section");
+  card.id = `episode-${episode.id}`;
 
   const title = document.createElement("h2");
   title.textContent = episode.name;
@@ -65,6 +67,24 @@ function setupSearch(allEpisodes) {
 
     makePageForEpisodes(matches);
     countDisplay.textContent = `${matches.length} / ${allEpisodes.length} episodes`;
+  });
+}
+
+function setupEpisodeSelector(allEpisodes) {
+  const selectElem = document.getElementById("episode-select");
+
+  allEpisodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id;
+    option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
+    selectElem.append(option);
+  });
+
+  selectElem.addEventListener("change", () => {
+    const target = document.getElementById(`episode-${selectElem.value}`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
   });
 }
 
