@@ -1,9 +1,27 @@
-//You can edit ALL of the code here
+//You can edit ALL of the code
+let allEpisodes = [];
 function setup() {
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
-  setupSearch(allEpisodes);
-  setupEpisodeSelector(allEpisodes);
+  const rootElem = document.getElementById("root");
+  rootElem.textContent = "Loading episodes...";
+
+  fetch("https://api.tvmaze.com/shows/82/episodes")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to load episodes");
+      }
+
+      return response.json();
+    })
+    .then((episodes) => {
+      allEpisodes = episodes;
+      makePageForEpisodes(allEpisodes);
+
+      setupSearch(allEpisodes);
+      setupEpisodeSelector(allEpisodes);
+    })
+    .catch(() => {
+      rootElem.textContent = "Sorry, we could not load the episodes.";
+    });
 }
 
 function makePageForEpisodes(episodeList) {
