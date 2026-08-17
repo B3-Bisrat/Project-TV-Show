@@ -16,11 +16,12 @@ function setup() {
     .then((shows) => {
       // Sort alphabetically, case-insensitive
       showsList = shows.sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
       );
       setupShowSelector(showsList);
       // Load the first show by default (or pick a specific one, e.g. Breaking Bad = 169)
-      loadShow(showsList[0].id);
+      document.getElementById("root").textContent =
+        "Choose a TV show from the list.";
     })
     .catch(() => {
       rootElem.textContent = "Sorry, we could not load the shows list.";
@@ -29,7 +30,7 @@ function setup() {
 
 function setupShowSelector(shows) {
   const showSelectElem = document.getElementById("show-select");
-  showSelectElem.innerHTML = "";
+  showSelectElem.innerHTML = '<option value="">Choose a TV show...</option>';
   shows.forEach((show) => {
     const option = document.createElement("option");
     option.value = show.id;
