@@ -8,13 +8,21 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   </head>
   <body>
-    <select id="show-select"></select>
-    <input type="text" id="search-input" placeholder="Search episodes..." />
-    <p id="search-count"></p>
-    <select id="episode-select">
-      <option value="">Jump to episode...</option>
-    </select>
-    <div id="root"></div>
+    <section id="shows-page">
+      <h1>TV SHOWS</h1>
+      <input type="text" id="show-search" placeholder="Search shows..." />
+      <div id="shows-list"></div>
+    </section>
+
+    <section id="episodes-page" hidden>
+      <button id="back-toback">← Back to shows</button>
+      <input type="text" id="search-input" placeholder="Search episodes..." />
+      <p id="search-count"></p>
+      <select id="episode-select">
+        <option value="">Jump to episode...</option>
+      </select>
+      <div id="root"></div>
+    </section>
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
   </body>

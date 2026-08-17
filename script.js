@@ -3,7 +3,7 @@ const episodeCache = {}; // showId -> episodes array
 let showsList = [];
 
 function setup() {
-  const rootElem = document.getElementById("root");
+  const rootElem = document.getElementById("shows-list");
   rootElem.textContent = "Loading shows...";
 
   fetch("https://api.tvmaze.com/shows")
@@ -18,28 +18,95 @@ function setup() {
       showsList = shows.sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
       );
-      setupShowSelector(showsList);
-      // Load the first show by default (or pick a specific one, e.g. Breaking Bad = 169)
-      document.getElementById("root").textContent =
-        "Choose a TV show from the list.";
+      makeShowsPage(showsList);
+      setupShowSearch();
+      setupBackButton();
     })
     .catch(() => {
       rootElem.textContent = "Sorry, we could not load the shows list.";
     });
 }
 
-function setupShowSelector(shows) {
-  const showSelectElem = document.getElementById("show-select");
-  showSelectElem.innerHTML = '<option value="">Choose a TV show...</option>';
-  shows.forEach((show) => {
-    const option = document.createElement("option");
-    option.value = show.id;
-    option.textContent = show.name;
-    showSelectElem.append(option);
+function makeShowsPage(shows) {
+  const showsListElem = document.getElementById("shows-list");
+
+  showsListElem.innerHTML = "";
+
+  for (const show of shows) {
+    showsListElem.append(makeShowCard(show));
+  }
+}
+
+function makeShowCard(show) {
+  const card = document.createElement("article");
+
+  const title = document.createElement("h2");
+  title.textContent = show.name;
+
+  const image = document.createElement("img");
+  image.src = show.image ? show.image.medium : "";
+  image.alt = show.name;
+
+  const summary = document.createElement("div");
+  summary.innerHTML = show.summary || "";
+
+  const genres = document.createElement("p");
+  genres.textContent = `Genres: ${show.genres.join(", ")}`;
+
+  const status = document.createElement("p");
+  status.textContent = `Status: ${show.status}`;
+
+  const rating = document.createElement("p");
+  rating.textContent = `Rating: ${show.rating.average || "N/A"}`;
+
+  const runtime = document.createElement("p");
+  runtime.textContent = `Runtime: ${show.runtime || "N/A"} minutes`;
+
+  card.append(title, image, summary, genres, status, rating, runtime);
+
+  title.addEventListener("click", () => {
+    showEpisodes(show.id);
   });
 
-  showSelectElem.addEventListener("change", () => {
-    loadShow(showSelectElem.value);
+  return card;
+}
+
+function showEpisodes(showId) {
+  const showsPage = document.getElementById("shows-page");
+  const episodesPage = document.getElementById("episodes-page");
+
+  showsPage.hidden = true;
+  episodesPage.hidden = false;
+
+  loadShow(showId);
+}
+
+function setupBackButton() {
+  const backButton = document.getElementById("back-toback");
+  const showsPage = document.getElementById("shows-page");
+  const episodesPage = document.getElementById("episodes-page");
+
+  backButton.addEventListener("click", () => {
+    episodesPage.hidden = true;
+    showsPage.hidden = false;
+  });
+}
+
+function setupShowSearch() {
+  const searchInput = document.getElementById("show-search");
+
+  searchInput.addEventListener("input", () => {
+    const term = searchInput.value.toLowerCase();
+
+    const matches = showsList.filter((show) => {
+      return (
+        show.name.toLowerCase().includes(term) ||
+        show.genres.join(" ").toLowerCase().includes(term) ||
+        show.summary.toLowerCase().includes(term)
+      );
+    });
+
+    makeShowsPage(matches);
   });
 }
 
