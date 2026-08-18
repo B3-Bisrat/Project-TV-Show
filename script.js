@@ -21,6 +21,8 @@ function setup() {
       makeShowsPage(showsList);
       setupShowSearch();
       setupBackButton();
+      setupSearch();
+      setupEpisodeSelector();
     })
     .catch(() => {
       rootElem.textContent = "Sorry, we could not load the shows list.";
@@ -118,7 +120,7 @@ function loadShow(showId) {
   if (searchInput) searchInput.value = "";
 
   // Use cache if we've already fetched this show's episodes
-  if (episodeCache[showId]) {
+  if (episodeCache[showId] !== undefined) {
     allEpisodes = episodeCache[showId];
     finishLoadingShow();
     return;
@@ -144,8 +146,7 @@ function loadShow(showId) {
 
 function finishLoadingShow() {
   makePageForEpisodes(allEpisodes);
-  setupSearch(allEpisodes);
-  setupEpisodeSelector(allEpisodes);
+  updateEpisodeSelector(allEpisodes);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -186,36 +187,51 @@ function makeCredit() {
   return credit;
 }
 
-function setupSearch(allEpisodes) {
+function setupSearch() {
   const searchInput = document.getElementById("search-input");
   const countDisplay = document.getElementById("search-count");
+
   searchInput.addEventListener("input", () => {
     const term = searchInput.value.toLowerCase();
+
     const matches = allEpisodes.filter((episode) => {
       return (
         episode.name.toLowerCase().includes(term) ||
         (episode.summary && episode.summary.toLowerCase().includes(term))
       );
     });
+
     makePageForEpisodes(matches);
     countDisplay.textContent = `${matches.length} / ${allEpisodes.length} episodes`;
   });
 }
 
-function setupEpisodeSelector(allEpisodes) {
+function setupEpisodeSelector() {
   const selectElem = document.getElementById("episode-select");
-  selectElem.innerHTML = ""; // reset when switching shows
-  allEpisodes.forEach((episode) => {
-    const option = document.createElement("option");
-    option.value = episode.id;
-    option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
-    selectElem.append(option);
-  });
+
   selectElem.addEventListener("change", () => {
     const target = document.getElementById(`episode-${selectElem.value}`);
+
     if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+      target.scrollIntoView({
+        behavior: "smooth",
+      });
     }
+  });
+}
+
+function updateEpisodeSelector(episodes) {
+  const selectElem = document.getElementById("episode-select");
+
+  selectElem.innerHTML = '<option value="">Jump to episode...</option>';
+
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+
+    option.value = episode.id;
+    option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
+
+    selectElem.append(option);
   });
 }
 
