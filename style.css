@@ -30,6 +30,17 @@ img {
   margin: 15px 0;
 }
 
+#shows-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+#shows-list article {
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
 p {
   line-height: 1.5;
 }
