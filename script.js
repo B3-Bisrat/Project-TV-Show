@@ -19,6 +19,7 @@ function setup() {
         a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
       );
       makeShowsPage(showsList);
+      setupShowSelector(showsList);
       setupShowSearch();
       setupBackButton();
       setupSearch();
@@ -109,6 +110,27 @@ function setupShowSearch() {
     });
 
     makeShowsPage(matches);
+  });
+}
+
+function setupShowSelector(shows) {
+  const showSelectElem = document.getElementById("show-select");
+
+  showSelectElem.innerHTML = '<option value="">Choose a TV show...</option>';
+
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+
+    option.value = show.id;
+    option.textContent = show.name;
+
+    showSelectElem.append(option);
+  });
+
+  showSelectElem.addEventListener("change", () => {
+    if (showSelectElem.value !== "") {
+      showEpisodes(showSelectElem.value);
+    }
   });
 }
 
